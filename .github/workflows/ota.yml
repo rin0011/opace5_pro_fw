@@ -56,4 +56,4 @@ jobs:
             
             - name: Creating release
               run: |
-                gh release create $REL_NAME --title $(echo $REL_NAME) --notes "" boot.img init_boot.img boot.img.sha1sum init_boot.img.sha1sum fastboot_firmware.zip --target $(echo ${{ github.event.inputs.fileurl }} | cut -d'/' -f5) --prerelease
+                gh release create $REL_NAME --title $(echo $REL_NAME) --notes "" boot.img init_boot.img boot.img.sha1sum init_boot.img.sha1sum fastboot_firmware.zip ota.zip
