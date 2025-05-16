@@ -71,6 +71,6 @@ jobs:
 
       - name: Creating release
         run: |
-          gh release create $REL_NAME --title $(echo $REL_NAME) --notes "" boot.img init_boot.img boot.img.sha1 init_boot.img.sha1 firmware_images.zip
+          gh release create $REL_NAME --title $(echo $REL_NAME) --notes "" boot.img init_boot.img boot.img.sha1 init_boot.img.sha1 firmware_package.zip
           RELEASE_URL=$(gh release view ${{ env.REL_NAME }} --json url -q .url)
           echo "release-url=${RELEASE_URL}" >> $GITHUB_OUTPUT
