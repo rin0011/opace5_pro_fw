@@ -72,6 +72,11 @@ jobs:
       - name: Create GitHub Release
         id: create-release
         run: |
+          
+          RAW_VERSION="${{ env.REL_NAME}}"
+          SAFE_VERSION=$(echo "${RAW_VERSION}" | sed -e 's/[()]/_/g' -e 's/[^a-zA-Z0-9_.-]//g')
+          DISPLAY_VERSION=$(echo "${RAW_VERSION}" | sed -e 's/(/\\\(/g' -e 's/)/\\\)/g')
+          
           gh release create ${{ env.REL_NAME }} \
             --title "Build ${{ env.REL_NAME }}" \
             --notes "" \
@@ -83,7 +88,27 @@ jobs:
           RELEASE_URL=$(gh release view ${{ env.REL_NAME }} --json url -q .url)
           echo "release-url=${RELEASE_URL}" >> $GITHUB_OUTPUT
 
-      - name: Cleanup Artifacts
-        if: always()
-        run: |
-          rm -rf ota.zip ota_unpacked boot_extract fw_extract firmware_images
+- name: Create GitHub Release
+  id: create-release
+  run: |
+    # 原始版本号
+    RAW_VERSION="${{ env.REL_NAME}}"
+    
+    # 生成安全版本号（文件和URL可用）
+    SAFE_VERSION=$(echo "${RAW_VERSION}" | sed -e 's/[()]/_/g' -e 's/[^a-zA-Z0-9_.-]//g')
+    
+    # 生成显示用版本号（保留原始格式）
+    DISPLAY_VERSION=$(echo "${RAW_VERSION}" | sed -e 's/(/\\\(/g' -e 's/)/\\\)/g')
+    
+    # 创建release
+    gh release create "${SAFE_VERSION}" \
+      --title "${DISPLAY_VERSION}" \
+      --notes "Fastboot firmware package for ${DISPLAY_VERSION}" \
+      boot.img \
+      init_boot.img \
+      *.sha1 \
+      firmware_package.zip
+    
+    # 获取release链接
+    RELEASE_URL=$(gh release view "${SAFE_VERSION}" --json url -q .url)
+    echo "release-url=${RELEASE_URL}" >> $GITHUB_OUTPUT
