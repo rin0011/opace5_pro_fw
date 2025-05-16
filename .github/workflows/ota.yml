@@ -69,21 +69,8 @@ jobs:
           
           zip -qr firmware_package.zip firmware_images
 
-      - name: Create GitHub Release
-        id: create-release
+      - name: Creating release
         run: |
-          
-          RAW_VERSION="${{ env.REL_NAME}}"
-          SAFE_VERSION=$(echo "${RAW_VERSION}" | sed -e 's/[()]/_/g' -e 's/[^a-zA-Z0-9_.-]//g')
-          DISPLAY_VERSION=$(echo "${RAW_VERSION}" | sed -e 's/(/\\\(/g' -e 's/)/\\\)/g')
-          
-          gh release create ${{ env.REL_NAME }} \
-            --title "Build ${{ env.REL_NAME }}" \
-            --notes "" \
-            boot.img \
-            init_boot.img \
-            *.sha1 \
-            firmware_package.zip
-
+          gh release create $REL_NAME --title $(echo $REL_NAME) --notes "" boot.img init_boot.img boot.img.sha1sum init_boot.img.sha1sum firmware_images.zip
           RELEASE_URL=$(gh release view ${{ env.REL_NAME }} --json url -q .url)
           echo "release-url=${RELEASE_URL}" >> $GITHUB_OUTPUT
